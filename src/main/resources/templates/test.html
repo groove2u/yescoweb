@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <title></title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-serialize-object/2.5.0/jquery.serialize-object.min.js"></script>
+
+</head>
+
+<body>
+
+<div id="wrap">
+    <form name="frm" id="frm">
+        <input type="text" id="id" name="id" value="test" />
+        <input type="text" id="pw" name="pw" value="test password" />
+        <input id="btnSend" name="btnSend" type="button" value="send to Native App"/>
+        <input id="btnBio" name="btnBio" type="button" value="생채인증 호출"/>
+
+
+    </form>
+</div>
+
+
+</body>
+
+
+<script>
+    $('#btnSend').click(function(){
+        sendToNative();
+
+    });
+    $('#btnBio').click(function(){
+        BioCall();
+
+    });
+
+    var sendToNative = function(){
+        let id = $("#id").val();
+        let pw = $("#pw").val();
+
+        if(window.YescoApp && window.YescoApp.setUserInfo){
+
+            console.log("android available");
+            window.YescoApp.setUserInfo(id,pw);
+        }else{
+            console.log("android not available");
+        }
+        console.log("id="+id,"pw="+pw);
+    };
+
+    var BioCall = function(){
+        if(window.YescoApp && window.YescoApp.bioCall){
+
+            console.log("android available");
+            window.YescoApp.bioCall();
+        }else{
+            console.log("android not available");
+        }
+    };
+
+    var BioCallback = function(id,pw){
+        console.log("====================BioCallback id="+id,"pw="+pw);
+    };
+</script>
+</html>
