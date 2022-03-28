@@ -22,6 +22,9 @@
         <input type="text" id="pw" name="pw" value="test password" />
         <input id="btnSend" name="btnSend" type="button" value="send to Native App"/>
         <input id="btnBio" name="btnBio" type="button" value="생채인증 호출"/>
+        <input id="btnVersion" name="btnVersion" type="button" value="버전정보 호출"/>
+        <input id="btnToken" name="btnToken" type="button" value="토큰 호출"/>
+        <input id="file" name="file" type="file" value="이미지첨부"/>
 
 
     </form>
@@ -40,32 +43,97 @@
         BioCall();
 
     });
+    //버전 체크시 아이폰 콜백
+    var versionCheck = function(version){
+        alert(version);
+    }
+    $('#btnVersion').click(function(){
+        var varUA = navigator.userAgent.toLowerCase(); //userAgent 값 얻기
+
+        if ( varUA.indexOf('android') > -1) {
+            if(window.YescoApp && window.YescoApp.setUserInfo){
+
+                console.log("android available");
+                let version = window.YescoApp.getVersionInfo();
+                alert(version);
+                console.log(version);
+            }else{
+                console.log("android not available");
+            }
+
+        } else if ( varUA.indexOf("iphone") > -1||varUA.indexOf("ipad") > -1||varUA.indexOf("ipod") > -1 ) {
+            //IOS
+            window.webkit.messageHandlers.script.postMessage('versionCheck');
+        } else {
+            //아이폰, 안드로이드 외
+            return "other";
+        }
+
+    });
+    $('#btnToken').click(function(){
+
+        if(window.YescoApp && window.YescoApp.getToken){
+
+            console.log("android available");
+            let token = window.YescoApp.getToken();
+            alert(token);
+            console.log(token);
+        }else{
+            console.log("android not available");
+        }
+    });
+
 
     var sendToNative = function(){
         let id = $("#id").val();
         let pw = $("#pw").val();
 
-        if(window.YescoApp && window.YescoApp.setUserInfo){
 
-            console.log("android available");
-            window.YescoApp.setUserInfo(id,pw);
-        }else{
-            console.log("android not available");
+        var varUA = navigator.userAgent.toLowerCase(); //userAgent 값 얻기
+
+        if ( varUA.indexOf('android') > -1) {
+            if(window.YescoApp && window.YescoApp.setUserInfo){
+
+                console.log("android available");
+                window.YescoApp.setUserInfo(id,pw);
+            }else{
+                console.log("android not available");
+            }
+        } else if ( varUA.indexOf("iphone") > -1||varUA.indexOf("ipad") > -1||varUA.indexOf("ipod") > -1 ) {
+            //IOS
+            var jsonObj = {"id":id, "pw":pw};
+            window.webkit.messageHandlers.system.postMessage(JSON.stringify(jsonObj));
+        } else {
+            //아이폰, 안드로이드 외
+            return "other";
         }
+
         console.log("id="+id,"pw="+pw);
     };
 
     var BioCall = function(){
-        if(window.YescoApp && window.YescoApp.bioCall){
 
-            console.log("android available");
-            window.YescoApp.bioCall();
-        }else{
-            console.log("android not available");
+        var varUA = navigator.userAgent.toLowerCase(); //userAgent 값 얻기
+
+        if ( varUA.indexOf('android') > -1) {
+            if(window.YescoApp && window.YescoApp.bioCall){
+
+                console.log("android available");
+                window.YescoApp.bioCall();
+            }else{
+                console.log("android not available");
+            }
+        } else if ( varUA.indexOf("iphone") > -1||varUA.indexOf("ipad") > -1||varUA.indexOf("ipod") > -1 ) {
+            //IOS
+            window.webkit.messageHandlers.script.postMessage('bioCall');
+        } else {
+            //아이폰, 안드로이드 외
+            return "other";
         }
     };
 
     var BioCallback = function(id,pw){
+        alert(id+","+pw);
         console.log("====================BioCallback id="+id,"pw="+pw);
     };
 </script>
